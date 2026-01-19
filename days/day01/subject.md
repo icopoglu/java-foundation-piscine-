@@ -1,51 +1,52 @@
-# Day 01: Java Basics & The Memory Model
+# Day 01: Java for Embedded Engineers (Memory & Optimization)
 
-## Overview
-Today is about resetting your C/C++ brain. You will learn how Java handles memory without pointers and how the JVM (Java Virtual Machine) manages data via the Stack and the Heap.
-
----
-
-## General Rules
-1. **No External Libraries:** Use only standard JDK (e.g., Scanner, ArrayList).
-2. **Naming Convention:** Class names: `PascalCase`, Method/Variable names: `camelCase`.
-3. **Professional Documentation:** Use Javadoc (/** ... */) for your methods.
-4. **Memory Awareness:** You must be able to explain where each variable lives.
+## 🎯 Overview
+This module focuses on bridging the gap between Embedded C/C++ memory management and Java's JVM architecture. The goal is to understand the cost of abstractions, memory footprints, and data integrity in high-performance automation systems.
 
 ---
 
-## Mandatory Reading
-* **Oracle Docs:** [Language Basics](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html)
-* **Baeldung:** [Java Stack and Heap](https://www.baeldung.com/java-stack-heap)
-* **Concepts:** Autoboxing, Integer Cache, Pass-by-value.
+## 📚 Core Concepts Covered
+* **Stack vs Heap:** Understanding variable lifecycles.
+* **Reference Handling:** Analyzing "Pass-by-Value of Reference" vs C Pointers.
+* **Immutability:** String Pool mechanics and memory leak prevention using `StringBuilder`.
+* **Bitwise Operations:** Implementing CRC logic using pure Java without external libraries.
 
 ---
 
-## Exercise 00: The Cache Experiment
-Create a file named `IntegerExperiment.java`. Compare two `Integer` objects with the value `100` using `==`, then do the same for `1000`. 
-* Explain in a comment why the result is different.
+## 🛠️ Exercises
 
-##  Exercise 01: Device Registry CLI
-Create a basic registry system for a device fleet.
+### Exercise 00: The Cost of Abstraction (Primitive vs Wrapper)
+**Directory:** `ex00/`
+**Objective:** Analyze the performance impact of Autoboxing/Unboxing.
+* Measured the CPU time difference between `int` (Stack) and `Integer` (Heap) summation loops (10M iterations).
+* **Key Finding:** Wrapper classes introduce significant overhead due to object header memory footprint and GC pressure.
 
-### Requirements:
-1.  **Class `Device`**:
-    * Fields: `private int id`, `private String model`, `private int ramCapacity`.
-    * Methods: Necessary getters, setters, and a constructor.
-2.  **Class `DeviceRegistryApp`**:
-    * Uses a `Scanner` to read input from the console.
-    * Stores `Device` objects in an `ArrayList`.
-    * Functionality: `Add Device`, `List All Devices`, `Show Total RAM`.
+### Exercise 01: Packet Encapsulation
+**Directory:** `ex01/`
+**Objective:** Simulate a binary communication packet structure.
+* Designed a `Packet` class mimicking a C-Struct.
+* Implemented strict Encapsulation with Setter validations to prevent invalid protocol states (e.g., negative length).
+
+### Exercise 02: The Reference Trap
+**Directory:** `ex02/`
+**Objective:** Prove Java's reference passing mechanism.
+* Implemented `reset()` and `increment()` methods to demonstrate that reassigning a reference locally does not affect the original object, whereas modifying fields does.
+* **Analogy:** Mapped Java references to C-style pointers.
+
+### Exercise 03: Memory Optimization (String vs StringBuilder)
+**Directory:** `ex03/`
+**Objective:** Prevent memory leaks in high-frequency loops (e.g., UART listeners).
+* Simulated a data stream concatenation scenario.
+* Proved that `String` concatenation creates thousands of dead objects in Heap, while `StringBuilder` uses a mutable buffer, providing massive performance gains.
+
+### Exercise 04: Algorithmic Logic (CRC-8 & Checksum)
+**Directory:** `ex04/`
+**Objective:** Implement low-level data verification.
+* Wrote a pure logic XOR Checksum calculator.
+* Implemented a CRC-8 algorithm using bitwise operators (`& 0xFF`, `^`, `<<`), handling Java's signed byte limitations correctly.
 
 ---
 
-## Knowledge Check (For day01_answers.md)
-1.  What is the difference between `int` and `Integer`?
-2.  Why is Java called "Pass-by-value" even when passing objects?
-3.  What happens on the Heap when you set an object reference to `null`?
-
----
-
-## Submission Instructions
-1.  Push your code to: `checkpoints/day01/`
-2.  Push your answers to: `checkpoints/day01_answers.md`
-3.  Fill your `evaluation.md` for Day 01.
+## 📝 Engineer's Notes
+* Java `byte` is signed (-128 to 127). Bitwise masking (`& 0xFF`) is mandatory when processing binary protocols from hardware.
+* Improper use of Wrapper classes in tight loops can cause latency spikes due to Garbage Collection.
